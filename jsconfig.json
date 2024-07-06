@@ -5,7 +5,6 @@
     "checkJs": true,
     "baseUrl": ".",
     "allowJs": true,
-
     "paths": {
       "@/*": ["./src/*"]
     }

@@ -17,13 +17,6 @@ export default function JadwalPraktek() {
     fetchData();
   }, []);
 
-  const columns = [
-    { name: "Dokter", uid: "dokter" },
-    { name: "Spesialisasi", uid: "spesialisasi" },
-    { name: "Jam Mulai", uid: "jam_mulai" },
-    { name: "Jam Selesai", uid: "jam_selesai" },
-  ];
-
   return (
     <div className="container mx-auto p-4 overflow-y-auto h-screen">
       <h1 className="text-2xl font-bold mb-4">Jadwal Praktek</h1>
