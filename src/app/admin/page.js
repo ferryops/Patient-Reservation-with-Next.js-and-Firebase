@@ -2,15 +2,15 @@
 import { useState } from "react";
 import Dashboard from "../../components/Dashboard";
 import Reservasi from "../../components/Reservasi";
-import Pasien from "../../components/Pasien";
-import Dokter from "../../components/Dokter";
-import JadwalPraktek from "../../components/JadwalPraktek";
+import Pasien from "../../components/Pasien/Pasien";
+import Dokter from "../../components/Dokter/Dokter";
+import JadwalPraktek from "../../components/JadwalPraktek/JadwalPraktek";
 
 export default function AdminPage() {
   const [clickMenu, setClickMenu] = useState("Dashboard");
   const menu = ["Dashboard", "Reservasi", "Pasien", "Dokter", "Jadwal Praktek"];
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen overflow-hidden">
       {/* Sidebar */}
       <nav className="w-64 bg-gray-800 text-white p-4">
         <div className="text-lg font-bold mb-4">Admin Menu</div>
@@ -28,7 +28,7 @@ export default function AdminPage() {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-1 p-4">
+      <main className="flex-1 p-4 pr-0">
         {clickMenu === "Dashboard" ? <Dashboard /> : null}
         {clickMenu === "Reservasi" ? <Reservasi /> : null}
         {clickMenu === "Pasien" ? <Pasien /> : null}

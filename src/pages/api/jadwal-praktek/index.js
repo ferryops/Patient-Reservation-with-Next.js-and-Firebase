@@ -1,36 +1,56 @@
-// src/pages/api/jadwal_praktek/index.js
+// src/pages/api/jadwal-praktek/index.js
 import firebaseApp from "../../../firebase/config";
-import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
 
 export default async function handler(req, res) {
-  const { method, body } = req;
+  const { method } = req;
 
-  const firestore = getFirestore(firebaseApp);
-  const jadwalPraktekRef = collection(firestore, "jadwal_praktek");
-
-  if (method === "POST") {
+  if (method === "GET") {
     try {
-      // Tambahkan dokumen baru ke koleksi "jadwal_praktek"
-      const docRef = await addDoc(jadwalPraktekRef, body);
-      const newJadwalPraktek = { id: docRef.id, ...body };
+      const firestore = getFirestore(firebaseApp);
+      const dokterRef = collection(firestore, "dokter");
 
-      res.status(201).json(newJadwalPraktek);
-    } catch (error) {
-      console.error("Error adding jadwal_praktek:", error);
-      res.status(500).json({ message: "Failed to add jadwal_praktek" });
-    }
-  } else if (method === "GET") {
-    try {
-      // Ambil semua dokumen dari koleksi "jadwal_praktek"
-      const snapshot = await getDocs(jadwalPraktekRef);
-      const jadwalPraktekList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      // get all collection from document "dokter"
+      const snapshot = await getDocs(dokterRef);
+      const dokterList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-      res.status(200).json(jadwalPraktekList);
+      // process data to get jadwal praktek
+      const jadwalPraktek = {
+        senin: [],
+        selasa: [],
+        rabu: [],
+        kamis: [],
+        jumat: [],
+        sabtu: [],
+        minggu: [],
+      };
+
+      dokterList.forEach((dokter) => {
+        // @ts-ignore
+        const { nama, spesialisasi, jadwal } = dokter;
+
+        // Iterate over the jadwal object
+        Object.keys(jadwal).forEach((hari) => {
+          const { jam_mulai, jam_selesai } = jadwal[hari];
+
+          // only push if both jam_mulai and jam_selesai are defined
+          if (jam_mulai && jam_selesai) {
+            jadwalPraktek[hari].push({
+              dokter: nama,
+              spesialisasi,
+              jam_mulai,
+              jam_selesai,
+            });
+          }
+        });
+      });
+
+      res.status(200).json(jadwalPraktek);
     } catch (error) {
-      console.error("Error fetching jadwal_praktek list:", error);
-      res.status(500).json({ message: "Failed to fetch jadwal_praktek list" });
+      console.error("Error fetching jadwal praktek:", error);
+      res.status(500).json({ message: "Failed to fetch jadwal praktek" });
     }
   } else {
-    res.status(405).json({ message: "Method not allowed" });
+    res.status(400).json({ message: "Method not allowed" });
   }
 }

@@ -1,6 +1,6 @@
 // src/pages/api/pasien/[id].js
 import firebaseApp from "../../../firebase/config";
-import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 
 export default async function handler(req, res) {
   const { method, query, body } = req;
