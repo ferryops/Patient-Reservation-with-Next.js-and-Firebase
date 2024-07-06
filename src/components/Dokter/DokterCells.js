@@ -127,7 +127,7 @@ export default function DokterCells({ columns, users, onUpdate }) {
         </Button>
         <Pagination total={10} initialPage={1} />
       </div>
-      <pre>{JSON.stringify(selectDokter, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(selectDokter, null, 2)}</pre> */}
       <MainModal
         size="md"
         onOpen={openModal}

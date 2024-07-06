@@ -4,7 +4,7 @@ import Dashboard from "../../components/Dashboard";
 import Reservasi from "../../components/Reservasi";
 import Pasien from "../../components/Pasien/Pasien";
 import Dokter from "../../components/Dokter/Dokter";
-import JadwalPraktek from "../../components/JadwalPraktek";
+import JadwalPraktek from "../../components/JadwalPraktek/JadwalPraktek";
 
 export default function AdminPage() {
   const [clickMenu, setClickMenu] = useState("Dashboard");
