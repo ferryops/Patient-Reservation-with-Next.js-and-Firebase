@@ -1,6 +1,6 @@
 // src/pages/api/dokter/[id].js
 import firebaseApp from "../../../firebase/config";
-import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 
 export default async function handler(req, res) {
   const { method, query, body } = req;
@@ -33,6 +33,16 @@ export default async function handler(req, res) {
       } catch (error) {
         console.error("Error updating dokter:", error);
         res.status(500).json({ message: "Failed to update dokter" });
+      }
+      break;
+
+    case "DELETE":
+      try {
+        await deleteDoc(dokterDoc);
+        res.status(200).json({ message: "Dokter deleted successfully" });
+      } catch (error) {
+        console.error("Error deleting dokter:", error);
+        res.status(500).json({ message: "Failed to delete dokter" });
       }
       break;
 

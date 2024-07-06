@@ -1,0 +1,163 @@
+import React from "react";
+import {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  User,
+  Chip,
+  Tooltip,
+  Pagination,
+  Button,
+} from "@nextui-org/react";
+import { FaPencilAlt, FaTrash, FaPlus } from "react-icons/fa";
+import MainModal from "../MainModal";
+import Snackbar from "../Snackbar";
+import PasienForm from "../Pasien/PasienForm";
+import { deletePasien } from "@/services/pasienService";
+
+const statusColorMap = {
+  active: "success",
+  paused: "danger",
+  vacation: "warning",
+};
+
+export default function PasienCells({ columns, users, onUpdate }) {
+  const [openModal, setOpenModal] = React.useState(false);
+  const [addPasien, setAddPasien] = React.useState(false);
+  const [updatePasien, setUpdatePasien] = React.useState(false);
+  const [selectPasien, setSelectPasien] = React.useState();
+  const [snackbar, setSnackbar] = React.useState({
+    open: false,
+    message: "",
+    position: "bottom-center",
+    variant: "success",
+  });
+
+  const handleDeletePasien = async (id) => {
+    try {
+      await deletePasien(id).then((res) => {
+        setOpenModal(false);
+        setSnackbar({
+          open: true,
+          message: res.message,
+          position: "top-center",
+          variant: "success",
+        });
+        onUpdate(true);
+      });
+    } catch (error) {
+      console.error("Error deleting pasien:", error);
+    }
+  };
+  const renderCell = React.useCallback((user, columnKey) => {
+    const cellValue = user[columnKey];
+
+    switch (columnKey) {
+      case "name":
+        return (
+          <User avatarProps={{ radius: "lg", src: user.avatar }} description={user.nama} name={user.nama}>
+            {user.nama}
+          </User>
+        );
+      case "role":
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-sm capitalize">{cellValue}</p>
+            <p className="text-bold text-sm capitalize text-default-400">{user.nomor_kontak}</p>
+          </div>
+        );
+      case "status":
+        return (
+          <Chip className="capitalize" color={statusColorMap[user.status]} size="sm" variant="flat">
+            {cellValue}
+          </Chip>
+        );
+      case "actions":
+        return (
+          <div className="items-center gap-6 flex justify-center">
+            <Tooltip color="warning" content="Edit user">
+              <span
+                className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                onClick={() => {
+                  setSelectPasien(user.id);
+                  setUpdatePasien(true);
+                }}
+              >
+                <FaPencilAlt color="warning" />
+              </span>
+            </Tooltip>
+            <Tooltip color="danger" content="Delete user">
+              <span
+                className="text-lg text-danger cursor-pointer active:opacity-50"
+                onClick={() => {
+                  setSelectPasien(user.id);
+                  setOpenModal(true);
+                }}
+              >
+                <FaTrash color="danger" />
+              </span>
+            </Tooltip>
+          </div>
+        );
+      default:
+        return cellValue;
+    }
+  }, []);
+
+  return (
+    <div className="w-full flex flex-col gap-4">
+      <Table aria-label="Custom cells">
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn key={column.uid} align={column.uid === "actions" ? "center" : "start"}>
+              {column.name}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody items={users}>
+          {(item) => <TableRow key={item.id}>{(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}</TableRow>}
+        </TableBody>
+      </Table>
+      <div className="flex justify-between">
+        <Button color="primary" startContent={<FaPlus />} onClick={() => setAddPasien(true)}>
+          Tambah Pasien
+        </Button>
+        <Pagination total={10} initialPage={1} />
+      </div>
+      <pre>{JSON.stringify(selectPasien, null, 2)}</pre>
+      <MainModal
+        size="md"
+        onOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        onTrue={() => handleDeletePasien(selectPasien)}
+        title={"Konfirmasi Hapus Pasien"}
+        content={"Yakin ingin menghapus pasien ini?"}
+        showFooter={true}
+        textTrue="Hapus"
+        textFalse="Batal"
+      />
+      <MainModal
+        size="md"
+        onOpen={addPasien}
+        onClose={() => setAddPasien(false)}
+        onTrue={() => console.log("add")}
+        title={"Tambah Pasien"}
+        content={<PasienForm id={null} onClose={() => setAddPasien(false)} onSuccess={(data) => onUpdate(data)} />}
+        showFooter={false}
+      />
+      <MainModal
+        size="md"
+        onOpen={updatePasien}
+        onClose={() => setUpdatePasien(false)}
+        onTrue={() => console.log("update")}
+        title={"Edit Pasien"}
+        content={<PasienForm id={selectPasien} onClose={() => setUpdatePasien(false)} onSuccess={(data) => onUpdate(data)} />}
+        showFooter={false}
+      />
+      <Snackbar message={snackbar.message} show={snackbar.open} position={snackbar.position} variant={snackbar.variant} />
+    </div>
+  );
+}
