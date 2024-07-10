@@ -43,3 +43,9 @@ export const deletePasien = async (id) => {
   if (!response.ok) throw new Error("Failed to delete pasien");
   return response.json();
 };
+
+export const fetchPasienBySearch = async (search) => {
+  const response = await fetch(`${API_URL}?search=${search}`);
+  if (!response.ok) throw new Error("Failed to fetch pasien by search");
+  return response.json();
+};

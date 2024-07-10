@@ -37,9 +37,7 @@ export default async function handler(req, res) {
         subject: "Konfirmasi Reservasi",
         text: `Reservasi Anda telah berhasil. Berikut detailnya:\n\nPasien: ${pasienDoc.data().nama}\nDokter: ${
           dokterDoc.data().nama
-        }\nTanggal & Waktu: ${new Date(
-          body.tanggal_waktu.seconds * 1000
-        ).toLocaleString()}\n\nTerima kasih telah menggunakan layanan kami.`,
+        }\nTanggal & Waktu: ${new Date(body.tanggal_waktu).toLocaleString()}\n\nTerima kasih telah menggunakan layanan kami.`,
       };
 
       await transporter.sendMail(mailOptions);
@@ -58,7 +56,7 @@ export default async function handler(req, res) {
           const reservasiData = { id: docSnapshot.id, ...docSnapshot.data() };
 
           // Ambil detail pasien
-          const pasienDocRef = doc(firestore, "pasien", reservasiData.id_pasien);
+          const pasienDocRef = doc(firestore, "pasien", reservasiData?.id_pasien);
           const pasienDoc = await getDoc(pasienDocRef);
           if (pasienDoc.exists()) {
             reservasiData.pasien = pasienDoc.data();
@@ -88,5 +86,3 @@ export default async function handler(req, res) {
     res.status(405).json({ message: "Method not allowed" });
   }
 }
-
-// msks tlha qbjc panu
