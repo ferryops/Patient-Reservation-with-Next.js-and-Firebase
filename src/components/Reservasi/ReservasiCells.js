@@ -62,11 +62,10 @@ export default function ReservasiCells({ columns, users, onUpdate }) {
             {user?.pasien?.nama}
           </User>
         );
-      case "role":
+      case "tanggal":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-sm capitalize">{cellValue}</p>
-            <p className="text-bold text-sm capitalize text-default-400">{user.nomor_kontak}</p>
+            <p className="text-bold text-sm capitalize text-default-400">{user.tanggal_waktu}</p>
           </div>
         );
       case "status":
