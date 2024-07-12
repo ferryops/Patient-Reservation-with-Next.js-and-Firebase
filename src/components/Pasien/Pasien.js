@@ -1,6 +1,5 @@
-// src/pages/pasien.js
 import React, { useState, useEffect } from "react";
-import { fetchPasien, createPasien, updatePasien, deletePasien } from "../../services/pasienService";
+import { fetchPasien } from "../../services/pasienService";
 import PasienCells from "./PasienCells";
 
 export default function Pasien() {

@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Dashboard from "../../components/Dashboard";
-import Reservasi from "../../components/Reservasi";
+import Reservasi from "../../components/Reservasi/Reservasi";
 import Pasien from "../../components/Pasien/Pasien";
 import Dokter from "../../components/Dokter/Dokter";
 import JadwalPraktek from "../../components/JadwalPraktek/JadwalPraktek";
@@ -9,6 +9,16 @@ import JadwalPraktek from "../../components/JadwalPraktek/JadwalPraktek";
 export default function AdminPage() {
   const [clickMenu, setClickMenu] = useState("Dashboard");
   const menu = ["Dashboard", "Reservasi", "Pasien", "Dokter", "Jadwal Praktek"];
+
+  useEffect(() => {
+    const menu = localStorage.getItem("menu") || "Dashboard";
+    setClickMenu(menu);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("menu", clickMenu);
+  }, [clickMenu]);
+
   return (
     <div className="flex min-h-screen overflow-hidden">
       {/* Sidebar */}

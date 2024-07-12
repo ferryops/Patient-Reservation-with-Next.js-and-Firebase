@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="id" className="scroll-smooth overflow-ellipsis">
+    <html lang="id" className="scroll-smooth scrollbar-hide">
       <AuthProvider>
         <body>
           <NextUIProvider>{children}</NextUIProvider>
