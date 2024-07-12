@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Dashboard from "../../components/Dashboard";
 import Reservasi from "../../components/Reservasi/Reservasi";
 import Pasien from "../../components/Pasien/Pasien";
@@ -7,8 +7,18 @@ import Dokter from "../../components/Dokter/Dokter";
 import JadwalPraktek from "../../components/JadwalPraktek/JadwalPraktek";
 
 export default function AdminPage() {
-  const [clickMenu, setClickMenu] = useState(localStorage.getItem("menu") || "Dashboard");
+  const [clickMenu, setClickMenu] = useState("Dashboard");
   const menu = ["Dashboard", "Reservasi", "Pasien", "Dokter", "Jadwal Praktek"];
+
+  useEffect(() => {
+    const menu = localStorage.getItem("menu") || "Dashboard";
+    setClickMenu(menu);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("menu", clickMenu);
+  }, [clickMenu]);
+
   return (
     <div className="flex min-h-screen overflow-hidden">
       {/* Sidebar */}
@@ -19,10 +29,7 @@ export default function AdminPage() {
             <li
               key={index}
               className={`mb-2 ${clickMenu === item ? "bg-gray-700" : "hover:bg-gray-700"} p-2 cursor-pointer rounded`}
-              onClick={() => {
-                setClickMenu(item);
-                localStorage.setItem("menu", item);
-              }}
+              onClick={() => setClickMenu(item)}
             >
               {item}
             </li>
