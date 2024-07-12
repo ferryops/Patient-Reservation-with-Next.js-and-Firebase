@@ -20,8 +20,8 @@ export default function Reservasi() {
 
   const columns = [
     { name: "NAMA", uid: "name" },
-    { name: "TANGGAL", uid: "date" },
-    { name: "JAM", uid: "time" },
+    { name: "TANGGAL", uid: "tanggal" },
+    { name: "JAM", uid: "jam" },
     { name: "AKSI", uid: "actions" },
   ];
 
