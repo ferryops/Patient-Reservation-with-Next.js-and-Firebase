@@ -1,6 +1,6 @@
 // src/pages/api/reservasi/index.js
 import firebaseApp from "../../../firebase/config";
-import { getFirestore, collection, getDocs, doc, getDoc, addDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, getDoc, addDoc, where, query } from "firebase/firestore";
 import transporter from "../../../utils/nodemailer";
 
 export default async function handler(req, res) {
@@ -49,28 +49,39 @@ export default async function handler(req, res) {
     }
   } else if (method === "GET") {
     try {
-      // Ambil semua dokumen dari koleksi "reservasi"
-      const snapshot = await getDocs(reservasiRef);
+      let reservasiQuery = reservasiRef;
+
+      // Check for query params pasien and filter by uid_pasien
+      if (req.query.pasien) {
+        reservasiQuery = query(reservasiRef, where("id_pasien", "==", req.query.pasien));
+      }
+
+      // Check for query params dokter and filter by uid_dokter
+      if (req.query.dokter) {
+        reservasiQuery = query(reservasiRef, where("id_dokter", "==", req.query.dokter));
+      }
+
+      const snapshot = await getDocs(reservasiQuery);
       const reservasiList = await Promise.all(
         snapshot.docs.map(async (docSnapshot) => {
           const reservasiData = { id: docSnapshot.id, ...docSnapshot.data() };
 
-          // Ambil detail pasien
+          // Get detail pasien
           const pasienDocRef = doc(firestore, "pasien", reservasiData?.id_pasien);
           const pasienDoc = await getDoc(pasienDocRef);
           if (pasienDoc.exists()) {
             reservasiData.pasien = pasienDoc.data();
           } else {
-            reservasiData.pasien = null; // Atau handle sesuai kebutuhan
+            reservasiData.pasien = null;
           }
 
-          // Ambil detail dokter
+          // Get detail dokter
           const dokterDocRef = doc(firestore, "dokter", reservasiData.id_dokter);
           const dokterDoc = await getDoc(dokterDocRef);
           if (dokterDoc.exists()) {
             reservasiData.dokter = dokterDoc.data();
           } else {
-            reservasiData.dokter = null; // Atau handle sesuai kebutuhan
+            reservasiData.dokter = null;
           }
 
           return reservasiData;

@@ -1,5 +1,6 @@
 import firebaseApp from "../../../firebase/config";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getFirestore, collection, doc, getDoc } from "firebase/firestore";
 
 export default async function handler(req, res) {
   const { method, body } = req;
@@ -8,12 +9,21 @@ export default async function handler(req, res) {
     const { email, password } = body;
 
     const auth = getAuth(firebaseApp);
+    const firestore = getFirestore(firebaseApp);
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      res.status(200).json({ uid: user.uid, email: user.email });
+      // Example: Get document ID from 'users' collection based on user's email
+      const usersRef = collection(firestore, "users");
+      const querySnapshot = await getDoc(doc(usersRef, user.uid));
+      if (querySnapshot.exists()) {
+        const userData = querySnapshot.data();
+        res.status(200).json({ uid: user.uid, email: user.email, id: querySnapshot.id, ...userData });
+      } else {
+        res.status(404).json({ message: "User document not found" });
+      }
     } catch (error) {
       console.error("Error logging in:", error);
       res.status(401).json({ message: "Invalid email or password" });

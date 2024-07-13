@@ -1,6 +1,6 @@
 // src/pages/api/pasien/index.js
 import firebaseApp from "../../../firebase/config";
-import { getFirestore, collection, getDocs, query, where, addDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, query, where, setDoc, doc } from "firebase/firestore";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import transporter from "../../../utils/nodemailer";
 
@@ -20,11 +20,14 @@ export default async function handler(req, res) {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Add the new user to the "pasien"
+        // Create a new user document in "pasien" collection with the UID as the document ID
         const newBody = { ...otherData, uid: user.uid, nama: otherData.nama.toLowerCase(), email: user.email };
+        const pasienRef = collection(firestore, "pasien");
+        const docRef = doc(pasienRef, user.uid); // Create a reference with the UID as the document ID
 
-        const docRef = await addDoc(pasienRef, newBody);
-        const newPasien = { id: docRef.id, ...newBody };
+        await setDoc(docRef, newBody); // Set the document with the newBody data
+
+        const newPasien = { id: user.uid, ...newBody }; //
 
         // send email notifikasi
         const mailOptions = {

@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    // disable types error
     "module": "CommonJS",
     "jsx": "preserve",
     "checkJs": true,
