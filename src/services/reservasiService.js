@@ -1,7 +1,7 @@
 const API_URL = "/api/reservasi";
 
-export const fetchReservasi = async () => {
-  const response = await fetch(API_URL);
+export const fetchReservasi = async ({ pasien = "", dokter = "" }) => {
+  const response = await fetch(`${API_URL}?pasien=${pasien}&dokter=${dokter}`);
   if (!response.ok) throw new Error("Failed to fetch reservasi");
   return response.json();
 };

@@ -19,7 +19,7 @@ import ReservasiForm from "../Reservasi/ReservasiForm";
 import statusReservasi from "@/constants/statusReservasi";
 import { deleteReservasi } from "@/services/reservasiService";
 import { formatTime } from "@/utils/formatTime";
-export default function ReservasiCells({ columns, users, onUpdate }) {
+export default function PasienReservasiCells({ columns, users, onUpdate }) {
   const [openModal, setOpenModal] = React.useState(false);
   const [addReservasi, setAddReservasi] = React.useState(false);
   const [updatePasien, setUpdatePasien] = React.useState(false);

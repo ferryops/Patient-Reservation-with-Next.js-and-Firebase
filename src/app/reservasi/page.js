@@ -79,7 +79,6 @@ export default function ReservasiPage() {
         {clickMenu === "Reservasi" ? <PasienReservasi /> : null}
         {clickMenu === "Jadwal Praktek" ? <JadwalPraktek /> : null}
       </main>
-
       {user === null ? <LoginPasien /> : null}
     </div>
   );

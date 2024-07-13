@@ -10,7 +10,7 @@ export default function Reservasi() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchReservasi();
+        const data = await fetchReservasi({ pasien: "", dokter: "" });
         serReservations(data);
       } catch (error) {
         console.error("Error fetching reservasi:", error);
@@ -20,9 +20,11 @@ export default function Reservasi() {
   }, [onUpdate]);
 
   const columns = [
-    { name: "NAMA", uid: "name" },
-    { name: "TANGGAL", uid: "tanggal" },
-    { name: "JAM", uid: "jam" },
+    { name: "PASIEN", uid: "pasien" },
+    { name: "KELUHAN", uid: "keluhan" },
+    { name: "TANGGAL RESERVASI", uid: "tanggal" },
+    { name: "DOKTER", uid: "dokter" },
+    { name: "STATUS", uid: "status" },
     { name: "AKSI", uid: "actions" },
   ];
 
