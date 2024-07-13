@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { fetchReservasi } from "@/services/reservasiService";
 import { H4 } from "../Font";
@@ -6,12 +7,11 @@ import PasienReservasiCells from "./PasienReservasiCells";
 export default function PasienReservasi() {
   const [reservations, serReservations] = useState([]);
   const [onUpdate, setOnUpdate] = useState(false);
-  const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchReservasi({ pasien: user?.uid });
+        const data = await fetchReservasi({ pasien: "" });
         serReservations(data);
       } catch (error) {
         console.error("Error fetching reservasi:", error);
