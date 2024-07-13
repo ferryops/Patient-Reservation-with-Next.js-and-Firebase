@@ -290,7 +290,7 @@ export default function LoginPasien() {
                         }
                       />
                     </div>
-                    <pre>{JSON.stringify(register, null, 2)}</pre>
+                    {/* <pre>{JSON.stringify(register, null, 2)}</pre> */}
 
                     <div className="flex py-2 px-1 justify-between">
                       {!clickRegister ? (
