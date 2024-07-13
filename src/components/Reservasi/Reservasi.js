@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { fetchReservasi } from "@/services/reservasiService";
 import ReservasiCells from "./ReservasiCells";
+import { H4 } from "../Font";
 
 export default function Reservasi() {
   const [reservations, serReservations] = useState([]);
@@ -27,7 +28,7 @@ export default function Reservasi() {
 
   return (
     <div className="container mx-auto p-4 overflow-y-auto h-screen">
-      <h1 className="text-2xl font-bold mb-4">Reservasi</h1>
+      <H4>Reservasi</H4>
       <ReservasiCells users={reservations} columns={columns} onUpdate={() => setOnUpdate(!onUpdate)} />
     </div>
   );

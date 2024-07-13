@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { fetchJadwalPraktek } from "../../services/jadwalPraktekService";
 import JadwalPraktekCells from "./JadwalPraktekCells";
+import { H4 } from "../Font";
 
 export default function JadwalPraktek() {
   const [users, setUsers] = useState([]);
@@ -18,8 +19,8 @@ export default function JadwalPraktek() {
   }, []);
 
   return (
-    <div className="container mx-auto p-4 overflow-y-auto h-screen">
-      <h1 className="text-2xl font-bold mb-4">Jadwal Praktek</h1>
+    <div className="container mx-auto p-4 overflow-y-auto h-screen scrollbar-hide">
+      <H4>Jadwal Praktek</H4>
       <JadwalPraktekCells jadwal={users} />
     </div>
   );

@@ -1,20 +1,27 @@
 "use client";
-import { useEffect, useState } from "react";
-import Dashboard from "../../components/Dashboard";
-import Reservasi from "../../components/Reservasi/Reservasi";
-import Pasien from "../../components/Pasien/Pasien";
-import Dokter from "../../components/Dokter/Dokter";
+import { useContext, useEffect, useState } from "react";
 import JadwalPraktek from "../../components/JadwalPraktek/JadwalPraktek";
+import PasienReservasi from "@/components/Pasien/PasienReservasi";
+import { H5, P } from "@/components/Font";
+import LoginPasien from "@/components/Pasien/LoginPasien";
+import { AuthContext } from "@/context/AuthContext";
 
-export default function AdminPage() {
-  const [clickMenu, setClickMenu] = useState("Dashboard");
+export default function ReservasiPage() {
+  const [clickMenu, setClickMenu] = useState("Reservasi");
   const [menuOpen, setMenuOpen] = useState(false);
-  const menu = ["Dashboard", "Reservasi", "Pasien", "Dokter", "Jadwal Praktek"];
+  const menu = ["Reservasi", "Jadwal Praktek"];
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    const menu = localStorage.getItem("menu") || "Dashboard";
+    const menu = localStorage.getItem("menu") || "Reservasi";
     setClickMenu(menu);
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      setClickMenu("Reservasi");
+    }
+  }, [user]);
 
   return (
     <div className="flex min-h-screen overflow-hidden">
@@ -33,7 +40,10 @@ export default function AdminPage() {
           menuOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:w-64 md:flex-shrink-0`}
       >
-        <div className="text-lg font-bold mb-4">Admin Menu</div>
+        <div className="mb-4">
+          <H5>Selamat Datang</H5>
+          <P>{user?.email}</P>
+        </div>
         <ul>
           {menu.map((item, index) => (
             <li
@@ -42,7 +52,7 @@ export default function AdminPage() {
               onClick={() => {
                 setClickMenu(item);
                 localStorage.setItem("menu", item);
-                setMenuOpen(false);
+                setMenuOpen(false); // Close the menu after selecting an item
               }}
             >
               {item}
@@ -53,12 +63,11 @@ export default function AdminPage() {
 
       {/* Main Content */}
       <main className="flex-1 p-0 md:p-4">
-        {clickMenu === "Dashboard" ? <Dashboard /> : null}
-        {clickMenu === "Reservasi" ? <Reservasi /> : null}
-        {clickMenu === "Pasien" ? <Pasien /> : null}
-        {clickMenu === "Dokter" ? <Dokter /> : null}
+        {clickMenu === "Reservasi" ? <PasienReservasi /> : null}
         {clickMenu === "Jadwal Praktek" ? <JadwalPraktek /> : null}
       </main>
+
+      {user === null ? <LoginPasien /> : null}
     </div>
   );
 }
