@@ -8,6 +8,7 @@ import JadwalPraktek from "../../components/JadwalPraktek/JadwalPraktek";
 
 export default function AdminPage() {
   const [clickMenu, setClickMenu] = useState("Dashboard");
+  const [menuOpen, setMenuOpen] = useState(false);
   const menu = ["Dashboard", "Reservasi", "Pasien", "Dokter", "Jadwal Praktek"];
 
   useEffect(() => {
@@ -17,8 +18,21 @@ export default function AdminPage() {
 
   return (
     <div className="flex min-h-screen overflow-hidden">
+      {/* Burger Menu Button */}
+      <div className="md:hidden p-4">
+        <button className="text-black" onClick={() => setMenuOpen(!menuOpen)}>
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+          </svg>
+        </button>
+      </div>
+
       {/* Sidebar */}
-      <nav className="w-64 bg-gray-800 text-white p-4">
+      <nav
+        className={`fixed inset-0 bg-gray-800 text-white p-4 z-50 transform ${
+          menuOpen ? "translate-x-0" : "-translate-x-full"
+        } transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:w-64 md:flex-shrink-0`}
+      >
         <div className="text-lg font-bold mb-4">Admin Menu</div>
         <ul>
           {menu.map((item, index) => (
@@ -28,6 +42,7 @@ export default function AdminPage() {
               onClick={() => {
                 setClickMenu(item);
                 localStorage.setItem("menu", item);
+                setMenuOpen(false);
               }}
             >
               {item}
@@ -37,7 +52,7 @@ export default function AdminPage() {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-1 p-4 pr-0">
+      <main className="flex-1 p-0 md:p-4">
         {clickMenu === "Dashboard" ? <Dashboard /> : null}
         {clickMenu === "Reservasi" ? <Reservasi /> : null}
         {clickMenu === "Pasien" ? <Pasien /> : null}

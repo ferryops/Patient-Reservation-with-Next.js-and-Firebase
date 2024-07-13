@@ -19,7 +19,7 @@ export default function JadwalPraktek() {
   }, []);
 
   return (
-    <div className="container mx-auto p-4 overflow-y-auto h-screen">
+    <div className="container mx-auto p-4 overflow-y-auto h-screen scrollbar-hide">
       <H4>Jadwal Praktek</H4>
       <JadwalPraktekCells jadwal={users} />
     </div>

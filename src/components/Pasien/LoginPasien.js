@@ -32,6 +32,7 @@ export default function LoginPasien() {
   const [clickRegister, setClickRegister] = useState(false);
   const [historyOfIllness, setHistoryOfIllness] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingLoginEmail, setLoadingLoginEmail] = useState(false);
   const [message, setMessage] = useState({
     open: false,
     message: "",
@@ -148,6 +149,7 @@ export default function LoginPasien() {
   };
 
   const handleLogin = async () => {
+    setLoadingLoginEmail(true);
     try {
       await loginPasienWithEmailAndPassword({
         email: loginForm.email,
@@ -167,8 +169,12 @@ export default function LoginPasien() {
         message: error.message,
         variant: "error",
       });
+    } finally {
+      setLoadingLoginEmail(false);
     }
   };
+
+  const allFilled = loginForm.email && loginForm.password;
 
   return (
     <div className="flex m-24 p-24">
@@ -333,7 +339,13 @@ export default function LoginPasien() {
                 )}
               </ModalBody>
               <ModalFooter className="flex flex-col">
-                <Button color="primary" onClick={() => (clickRegister ? handleRegister() : handleLogin())} fullWidth>
+                <Button
+                  color="primary"
+                  onClick={() => (clickRegister ? handleRegister() : handleLogin())}
+                  fullWidth
+                  disabled={loadingLoginEmail}
+                  isLoading={loadingLoginEmail}
+                >
                   {clickRegister ? "Daftar" : "Masuk"}
                 </Button>
                 <P className="text-center text-sm mb-2">
