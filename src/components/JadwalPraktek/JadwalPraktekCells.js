@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardBody } from "@nextui-org/react";
+import { Card, CardBody, Chip } from "@nextui-org/react";
 
 export default function JadwalPraktekCells({ jadwal }) {
   const jadwalPraktek = Object.keys(jadwal).map((hari) => ({
@@ -13,9 +13,13 @@ export default function JadwalPraktekCells({ jadwal }) {
         <p>
           <strong>{dokter.dokter}</strong>
         </p>
-        <p>Spesialisasi: {dokter.spesialisasi}</p>
-        {dokter.jam_mulai && <p>Jam Mulai: {dokter.jam_mulai}</p>}
-        {dokter.jam_selesai && <p>Jam Selesai: {dokter.jam_selesai}</p>}
+        <p className="text-sm">Spesialisasi: {dokter.spesialisasi}</p>
+        <div className="flex gap-1">
+          <p className="text-sm">waktu:</p>
+          {dokter.jam_mulai && <p className="text-sm">{dokter.jam_mulai}</p>}
+          <p className="text-sm">-</p>
+          {dokter.jam_selesai && <p className="text-sm">{dokter.jam_selesai}</p>}
+        </div>
       </CardBody>
     );
   };
@@ -23,9 +27,14 @@ export default function JadwalPraktekCells({ jadwal }) {
   return (
     <div className="w-full flex flex-col gap-4">
       {jadwalPraktek.map((item) => (
-        <div key={item.hari} className="w-full flex flex-col gap-4">
-          <h2 className="text-2xl">{item.hari}</h2>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div key={item.hari} className="w-full flex flex-col gap-4 justify-center">
+          <div className="w-full mt-4">
+            <Chip color="default" variant="bordered">
+              {item.hari.charAt(0).toUpperCase() + item.hari.slice(1)}
+            </Chip>
+          </div>
+
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
             {item?.data?.length > 0 ? (
               <>
                 {item.data.map((dokter) => (
