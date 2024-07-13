@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
-    // disable types error
     "module": "CommonJS",
     "jsx": "preserve",
-    "checkJs": true,
+    "checkJs": false,
     "baseUrl": ".",
     "allowJs": true,
     "paths": {

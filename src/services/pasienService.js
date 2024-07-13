@@ -73,3 +73,22 @@ export const resetPasswordPasien = async ({ email }) => {
   if (!response.ok) throw new Error("Failed to reset password pasien");
   return response.json();
 };
+
+export const exportToExcelPasiens = async () => {
+  const response = await fetch(`${API_URL}?exportToExcel=true`);
+  if (!response.ok) throw new Error("Failed to export pasien to Excel");
+  // Convert response to blob
+  const blob = await response.blob();
+  // Create blob link to download
+  const url = window.URL.createObjectURL(new Blob([blob]));
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", "pasien.xlsx");
+  // Append to html link element page
+  document.body.appendChild(link);
+  // Start download
+  link.click();
+  // Clean up and remove the link
+  link.parentNode.removeChild(link);
+  return;
+};

@@ -7,7 +7,6 @@ import LoginPasien from "@/components/Pasien/LoginPasien";
 import { AuthContext } from "@/context/AuthContext";
 import { Button } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import UserNotAuthenticated from "@/components/UI/user-not-authenticated";
 
 export default function ReservasiPage() {
   const [clickMenu, setClickMenu] = useState("Reservasi");

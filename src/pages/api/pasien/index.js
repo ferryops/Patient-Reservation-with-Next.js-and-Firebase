@@ -1,8 +1,9 @@
 // src/pages/api/pasien/index.js
 import firebaseApp from "../../../firebase/config";
-import { getFirestore, collection, getDocs, query, where, setDoc, doc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, query, where, limit, orderBy, startAfter, doc, setDoc } from "firebase/firestore";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import transporter from "../../../utils/nodemailer";
+import XLSX from "xlsx";
 
 export default async function handler(req, res) {
   const { method, query: queryParams, body } = req;
@@ -57,7 +58,7 @@ export default async function handler(req, res) {
     }
   } else if (method === "GET") {
     try {
-      const { search } = queryParams;
+      const { search, exportToExcel } = queryParams;
 
       let pasienQuery;
       if (search) {
@@ -72,7 +73,20 @@ export default async function handler(req, res) {
       const snapshot = await getDocs(pasienQuery);
       const pasienList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-      res.status(200).json(pasienList);
+      if (exportToExcel === "true") {
+        // Convert data to Excel format
+        const ws = XLSX.utils.json_to_sheet(pasienList);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Pasien");
+        const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "buffer" });
+
+        // Set headers for file download
+        res.setHeader("Content-Disposition", "attachment; filename=pasien.xlsx");
+        res.setHeader("Content-Type", "application/octet-stream");
+        res.status(200).send(excelBuffer);
+      } else {
+        res.status(200).json(pasienList);
+      }
     } catch (error) {
       console.error("Error fetching pasien list:", error);
       res.status(500).json({ message: "Failed to fetch pasien list" });

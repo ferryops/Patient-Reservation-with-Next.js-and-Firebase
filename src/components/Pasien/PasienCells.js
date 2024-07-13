@@ -16,7 +16,7 @@ import { FaPencilAlt, FaTrash, FaPlus } from "react-icons/fa";
 import MainModal from "../MainModal";
 import Snackbar from "../Snackbar";
 import PasienForm from "../Pasien/PasienForm";
-import { deletePasien } from "@/services/pasienService";
+import { deletePasien, exportToExcelPasiens } from "@/services/pasienService";
 
 const statusColorMap = {
   active: "success",
@@ -107,6 +107,21 @@ export default function PasienCells({ columns, users, onUpdate }) {
     }
   }, []);
 
+  const handleExportToExcelPasiens = async () => {
+    try {
+      await exportToExcelPasiens().then((res) => {
+        setSnackbar({
+          open: true,
+          message: "Exported successfully",
+          position: "top-center",
+          variant: "success",
+        });
+      });
+    } catch (error) {
+      console.error("Error exporting pasien:", error);
+    }
+  };
+
   return (
     <div className="w-full flex flex-col gap-4">
       <Table aria-label="Custom cells">
@@ -122,12 +137,16 @@ export default function PasienCells({ columns, users, onUpdate }) {
         </TableBody>
       </Table>
       <div className="flex justify-between">
-        <Button color="primary" startContent={<FaPlus />} onClick={() => setAddPasien(true)}>
-          Tambah Pasien
-        </Button>
+        <div>
+          <Button color="primary" startContent={<FaPlus />} onClick={() => setAddPasien(true)}>
+            Tambah Pasien
+          </Button>
+          <Button color="warning" startContent={<FaPlus />} onClick={() => handleExportToExcelPasiens()}>
+            Ekspor data ke Excel
+          </Button>
+        </div>
         <Pagination total={10} initialPage={1} />
       </div>
-      <pre>{JSON.stringify(selectPasien, null, 2)}</pre>
       <MainModal
         size="md"
         onOpen={openModal}
