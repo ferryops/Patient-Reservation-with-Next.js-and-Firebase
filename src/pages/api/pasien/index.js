@@ -2,6 +2,7 @@
 import firebaseApp from "../../../firebase/config";
 import { getFirestore, collection, getDocs, query, where, addDoc } from "firebase/firestore";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import transporter from "../../../utils/nodemailer";
 
 export default async function handler(req, res) {
   const { method, query: queryParams, body } = req;
@@ -12,18 +13,32 @@ export default async function handler(req, res) {
 
   if (method === "POST") {
     try {
-      const { email, password, ...otherData } = body;
+      const { email, password, alamat, ...otherData } = body;
 
-      // Buat user di Firebase Authentication
+      // Create a new user in Firebase Authentication
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Tambahkan dokumen baru ke koleksi "pasien"
+        // Add the new user to the "pasien"
         const newBody = { ...otherData, uid: user.uid, nama: otherData.nama.toLowerCase(), email: user.email };
 
         const docRef = await addDoc(pasienRef, newBody);
         const newPasien = { id: docRef.id, ...newBody };
+
+        // send email notifikasi
+        const mailOptions = {
+          from: process.env.EMAIL_USER,
+          to: email, // Email pasien
+          subject: "Berhasil Registrasi",
+          text: `Registrasi Anda telah berhasil.\n\nNama: ${
+            body.nama
+          }\nEmail: ${email}\nAlamat:${alamat}\nTanggal Registrasi: ${new Date().toLocaleDateString()}\n\nAkses Sistem Reservasi Pasien hanya di ${
+            process.env.NEXT_PUBLIC_WEBSITE_URL
+          }\n\nTerima kasih telah menggunakan layanan kami.`,
+        };
+
+        await transporter.sendMail(mailOptions);
 
         res.status(201).json(newPasien);
       } catch (authError) {
@@ -43,11 +58,11 @@ export default async function handler(req, res) {
 
       let pasienQuery;
       if (search) {
-        // Jika ada parameter search, buat query dengan filter nama
+        // If there is a search query, search for the query in the "pasien" collection
         const searchLower = search.toLowerCase();
         pasienQuery = query(pasienRef, where("nama", ">=", searchLower), where("nama", "<=", searchLower + "\uf8ff"));
       } else {
-        // Jika tidak ada parameter search, ambil semua dokumen dari koleksi "pasien"
+        // If there is no search query, fetch all the pasien from the "pasien" collection
         pasienQuery = query(pasienRef);
       }
 

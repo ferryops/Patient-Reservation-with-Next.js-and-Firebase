@@ -61,3 +61,15 @@ export const loginPasienWithEmailAndPassword = async ({ email, password }) => {
   if (!response.ok) throw new Error("Failed to login pasien");
   return response.json();
 };
+
+export const resetPasswordPasien = async ({ email }) => {
+  const response = await fetch(`${API_URL}/reset-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+  });
+  if (!response.ok) throw new Error("Failed to reset password pasien");
+  return response.json();
+};
