@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { fetchPasien } from "../../services/pasienService";
 import PasienCells from "./PasienCells";
+import { H4 } from "../Font";
 
 export default function Pasien() {
   const [users, setUsers] = useState([]);
@@ -27,7 +28,7 @@ export default function Pasien() {
 
   return (
     <div className="container mx-auto p-4 overflow-y-auto h-screen">
-      <h1 className="text-2xl font-bold mb-4">Daftar Pasien</h1>
+      <H4>Daftar Pasien</H4>
       <PasienCells columns={columns} users={users} onUpdate={() => setOnUpdate(!onUpdate)} />
     </div>
   );
