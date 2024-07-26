@@ -1,6 +1,6 @@
 // src/pages/api/jadwal-praktek/index.js
 import firebaseApp from "../../../firebase/config";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { getFirestore, collection, getDocs, query, where } from "firebase/firestore";
 
 export default async function handler(req, res) {
   const { method } = req;
@@ -10,11 +10,14 @@ export default async function handler(req, res) {
       const firestore = getFirestore(firebaseApp);
       const dokterRef = collection(firestore, "dokter");
 
-      // get all collection from document "dokter"
-      const snapshot = await getDocs(dokterRef);
+      // Create a query to filter only active doctors (status: 1)
+      const activeDokterQuery = query(dokterRef, where("status", "==", 1));
+
+      // Get all documents from the filtered query
+      const snapshot = await getDocs(activeDokterQuery);
       const dokterList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-      // process data to get jadwal praktek
+      // Process data to get jadwal praktek
       const jadwalPraktek = {
         senin: [],
         selasa: [],
@@ -33,7 +36,7 @@ export default async function handler(req, res) {
         Object.keys(jadwal).forEach((hari) => {
           const { jam_mulai, jam_selesai } = jadwal[hari];
 
-          // only push if both jam_mulai and jam_selesai are defined
+          // Only push if both jam_mulai and jam_selesai are defined
           if (jam_mulai && jam_selesai) {
             jadwalPraktek[hari].push({
               dokter: nama,
