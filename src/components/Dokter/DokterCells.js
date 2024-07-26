@@ -57,7 +57,7 @@ export default function DokterCells({ columns, users, onUpdate }) {
     switch (columnKey) {
       case "name":
         return (
-          <User avatarProps={{ radius: "lg", src: user.avatar }} description={user.nama} name={user.nama}>
+          <User avatarProps={{ radius: "lg", src: user.avatar }} name={user.nama}>
             {user.nama}
           </User>
         );

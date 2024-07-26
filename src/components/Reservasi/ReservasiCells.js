@@ -53,7 +53,11 @@ export default function ReservasiCells({ columns, users, onUpdate }) {
     switch (columnKey) {
       case "pasien":
         return (
-          <User avatarProps={{ radius: "lg", src: user.avatar }} description={user?.pasien?.email} name={user?.pasien?.nama}>
+          <User
+            avatarProps={{ radius: "lg", src: user.avatar }}
+            description={user?.pasien?.email}
+            name={user?.pasien?.nama.replace(/\b\w/g, (char) => char.toUpperCase())}
+          >
             {user?.pasien?.nama}
           </User>
         );

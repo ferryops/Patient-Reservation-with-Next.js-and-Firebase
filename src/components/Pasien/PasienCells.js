@@ -18,12 +18,6 @@ import Snackbar from "../Snackbar";
 import PasienForm from "../Pasien/PasienForm";
 import { deletePasien, exportToExcelPasiens } from "@/services/pasienService";
 
-const statusColorMap = {
-  active: "success",
-  paused: "danger",
-  vacation: "warning",
-};
-
 export default function PasienCells({ columns, users, onUpdate }) {
   const [openModal, setOpenModal] = React.useState(false);
   const [addPasien, setAddPasien] = React.useState(false);
@@ -58,27 +52,27 @@ export default function PasienCells({ columns, users, onUpdate }) {
     switch (columnKey) {
       case "name":
         return (
-          <User avatarProps={{ radius: "lg", src: user.avatar }} description={user.nama} name={user.nama}>
+          <User avatarProps={{ radius: "lg", src: user.avatar }} name={user.nama} className="capitalize">
             {user.nama}
           </User>
         );
-      case "role":
+      case "contact":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-sm capitalize">{cellValue}</p>
-            <p className="text-bold text-sm capitalize text-default-400">{user.nomor_kontak}</p>
+            <p className="text-bold text-sm">{user?.nomor_telepon}</p>
+            <p className="text-bold text-sm text-default-400">{user?.email}</p>
           </div>
         );
-      case "status":
+      case "last_diagnosis":
         return (
-          <Chip className="capitalize" color={statusColorMap[user.status]} size="sm" variant="flat">
-            {cellValue}
+          <Chip className="capitalize" size="sm" variant="flat">
+            {user?.diagnosis_terakhir}
           </Chip>
         );
       case "actions":
         return (
           <div className="items-center gap-6 flex justify-center">
-            <Tooltip color="warning" content="Edit user">
+            <Tooltip color="warning" content="Edit Pasien">
               <span
                 className="text-lg text-default-400 cursor-pointer active:opacity-50"
                 onClick={() => {
@@ -89,7 +83,7 @@ export default function PasienCells({ columns, users, onUpdate }) {
                 <FaPencilAlt color="warning" />
               </span>
             </Tooltip>
-            <Tooltip color="danger" content="Delete user">
+            <Tooltip color="danger" content="Delete Pasien">
               <span
                 className="text-lg text-danger cursor-pointer active:opacity-50"
                 onClick={() => {
