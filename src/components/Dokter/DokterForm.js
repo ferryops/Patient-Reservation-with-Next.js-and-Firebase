@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { createDokter, fetchDokterById, updateDokter } from "../../services/dokterService";
-import { Button, Input } from "@nextui-org/react";
+import { Button, Checkbox, Input } from "@nextui-org/react";
 
 const daysOfWeek = ["senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu"];
 
@@ -17,6 +17,7 @@ export default function DokterForm({ onClose, onSuccess, id }) {
       sabtu: { jam_mulai: "", jam_selesai: "" },
       minggu: { jam_mulai: "", jam_selesai: "" },
     },
+    status: 1,
   });
   const [loadingButton, setLoadingButton] = useState(false);
 
@@ -95,6 +96,16 @@ export default function DokterForm({ onClose, onSuccess, id }) {
             />
           </div>
         ))}
+
+        <Checkbox
+          value={form.status}
+          checked={form.status === 1 ? true : false}
+          onChange={(e) => setForm({ ...form, status: e.target.checked ? 1 : 0 })}
+        >
+          Status Dokter
+        </Checkbox>
+
+        {/* <pre>{JSON.stringify(form, null, 2)}</pre> */}
 
         <div className="flex justify-end gap-2">
           <Button color="danger" variant="light" type="submit" isLoading={loadingButton}>

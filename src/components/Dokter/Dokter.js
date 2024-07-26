@@ -21,7 +21,7 @@ export default function Pasien() {
 
   const columns = [
     { name: "NAMA", uid: "name" },
-    { name: "ROLE", uid: "role" },
+    { name: "SPESIALIS", uid: "spesialisasi" },
     { name: "STATUS", uid: "status" },
     { name: "AKSI", uid: "actions" },
   ];

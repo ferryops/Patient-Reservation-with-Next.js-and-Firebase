@@ -19,9 +19,8 @@ import DokterForm from "../Dokter/DokterForm";
 import { deleteDokter } from "@/services/dokterService";
 
 const statusColorMap = {
-  active: "success",
-  paused: "danger",
-  vacation: "warning",
+  1: "success",
+  2: "danger",
 };
 
 export default function DokterCells({ columns, users, onUpdate }) {
@@ -62,23 +61,22 @@ export default function DokterCells({ columns, users, onUpdate }) {
             {user.nama}
           </User>
         );
-      case "role":
+      case "spesialis":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-sm capitalize">{cellValue}</p>
-            <p className="text-bold text-sm capitalize text-default-400">{user.nomor_kontak}</p>
+            <p className="text-bold text-sm capitalize">{user.spesialisasi}</p>
           </div>
         );
       case "status":
         return (
           <Chip className="capitalize" color={statusColorMap[user.status]} size="sm" variant="flat">
-            {cellValue}
+            {cellValue === 1 ? "Aktif" : "Non-Aktif"}
           </Chip>
         );
       case "actions":
         return (
           <div className="items-center gap-6 flex justify-center">
-            <Tooltip color="warning" content="Edit user">
+            <Tooltip color="warning" content="Edit Dokter">
               <span
                 className="text-lg text-default-400 cursor-pointer active:opacity-50"
                 onClick={() => {
@@ -89,7 +87,7 @@ export default function DokterCells({ columns, users, onUpdate }) {
                 <FaPencilAlt color="warning" />
               </span>
             </Tooltip>
-            <Tooltip color="danger" content="Delete user">
+            <Tooltip color="danger" content="Delete Dokter">
               <span
                 className="text-lg text-danger cursor-pointer active:opacity-50"
                 onClick={() => {

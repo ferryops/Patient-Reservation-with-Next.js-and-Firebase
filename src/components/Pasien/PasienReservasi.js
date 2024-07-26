@@ -26,7 +26,6 @@ export default function PasienReservasi() {
     { name: "TANGGAL RESERVASI", uid: "tanggal" },
     { name: "DOKTER", uid: "dokter" },
     { name: "STATUS", uid: "status" },
-    { name: "AKSI", uid: "actions" },
   ];
 
   return (
