@@ -1,17 +1,17 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { fetchReservasi } from "@/services/reservasiService";
-import { H4 } from "../Font";
-import PasienReservasiCells from "./PasienReservasiCells";
+import { H4 } from "@/components/Font";
+import PasienCells from "./PasienCels";
 
-export default function PasienReservasi({ user }) {
+export default function PasienReservasi({ dokter }) {
   const [reservations, serReservations] = useState([]);
   const [onUpdate, setOnUpdate] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchReservasi({ pasien: user?.id });
+        const data = await fetchReservasi({ dokter: dokter?.id || "" });
         serReservations(data);
       } catch (error) {
         console.error("Error fetching reservasi:", error);
@@ -26,12 +26,13 @@ export default function PasienReservasi({ user }) {
     { name: "TANGGAL RESERVASI", uid: "tanggal" },
     { name: "DOKTER", uid: "dokter" },
     { name: "STATUS", uid: "status" },
+    { name: "AKSI", uid: "actions" },
   ];
 
   return (
     <div className="container mx-auto p-4 overflow-y-auto h-screen">
       <H4>Reservasi</H4>
-      <PasienReservasiCells users={reservations} columns={columns} onUpdate={() => setOnUpdate(!onUpdate)} />
+      <PasienCells users={reservations} columns={columns} onUpdate={() => setOnUpdate(!onUpdate)} />
     </div>
   );
 }

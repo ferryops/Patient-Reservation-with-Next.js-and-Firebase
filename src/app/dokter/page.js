@@ -1,29 +1,30 @@
 "use client";
 import { useContext, useEffect, useState } from "react";
 import JadwalPraktek from "../../components/JadwalPraktek/JadwalPraktek";
-import PasienReservasi from "@/components/Pasien/PasienReservasi";
 import { H5, P } from "@/components/Font";
 import LoginPasien from "@/components/Pasien/LoginPasien";
 import { AuthContext } from "@/context/AuthContext";
 import { Button } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
+import PasienReservasi from "./components/Pasien";
+import LoginDokter from "./components/LoginDokter";
 import MainModal from "@/components/MainModal";
 
-export default function ReservasiPage() {
-  const [clickMenu, setClickMenu] = useState("Reservasi");
+export default function DokterPage() {
+  const [clickMenu, setClickMenu] = useState("Pasien");
   const [menuOpen, setMenuOpen] = useState(false);
-  const menu = ["Reservasi", "Jadwal Praktek"];
+  const menu = ["Pasien"];
   const { user } = useContext(AuthContext);
   const navigation = useRouter();
 
   useEffect(() => {
-    const menu = localStorage.getItem("menu") || "Reservasi";
+    const menu = localStorage.getItem("menu") || "Pasien";
     setClickMenu(menu);
   }, []);
 
   useEffect(() => {
     if (user) {
-      setClickMenu("Reservasi");
+      setClickMenu("Pasien");
     }
   }, [user]);
 
@@ -70,38 +71,32 @@ export default function ReservasiPage() {
       <main className="flex-1 p-0">
         {/* Burger Menu Button */}
         <div className="md:hidden p-4">
-          <button className="text-black flex" onClick={() => setMenuOpen(!menuOpen)}>
+          <button className="text-black flex gap-2" onClick={() => setMenuOpen(!menuOpen)}>
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
             </svg>
+            Menu
           </button>
         </div>
       </main>
       {user === null ? (
-        <LoginPasien />
+        <LoginDokter />
       ) : (
         <>
-          {user?.login !== "pasien" ? (
+          {user?.login !== "dokter" ? (
             <MainModal
               size="md"
               onOpen={true}
               onClose={() => navigation.push("/")}
               onTrue={() => navigation.push("/logout")}
               title={"Unauthorized!"}
-              content={"Anda bukan pasien. Silahkan logout lalu login sebagai pasien."}
+              content={"Anda bukan dokter. Silahkan logout lalu login sebagai dokter."}
               showFooter={true}
               textTrue="Logout"
               textFalse="Kembali"
             />
           ) : (
-            <>
-              {user === null ? null : (
-                <div className="flex w-full">
-                  {clickMenu === "Reservasi" ? <PasienReservasi user={user} /> : null}
-                  {clickMenu === "Jadwal Praktek" ? <JadwalPraktek /> : null}
-                </div>
-              )}
-            </>
+            <>{user === null ? null : <> {clickMenu === "Pasien" ? <PasienReservasi dokter={user} /> : null}</>}</>
           )}
         </>
       )}

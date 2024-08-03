@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
 
-export default function PasienAgeChart() {
+export default function PasienAgeChart({ pasiensUsia }) {
   const chartRef = useRef(null);
 
   useEffect(() => {
@@ -13,7 +13,7 @@ export default function PasienAgeChart() {
       datasets: [
         {
           label: "Jumlah Pasien",
-          data: [15, 30, 45, 55, 70, 50, 25, 10], // Sesuaikan data dengan jumlah pasien berdasarkan usia
+          data: pasiensUsia?.data,
           backgroundColor: [
             "rgba(255, 99, 132, 0.2)",
             "rgba(54, 162, 235, 0.2)",
@@ -64,7 +64,7 @@ export default function PasienAgeChart() {
   }, []);
 
   return (
-    <div className="w-full h-[30rem] flex justify-center">
+    <div className="w-full max-h-[30rem] flex justify-center">
       <canvas id="pasienAgeChart" ref={chartRef} />
     </div>
   );

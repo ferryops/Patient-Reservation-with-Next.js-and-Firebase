@@ -1,18 +1,18 @@
 import React, { useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
 
-export default function ReservasiChart() {
+export default function ReservasiChart({ reservasi }) {
   const chartRef = useRef(null);
 
   useEffect(() => {
     const ctx = chartRef.current.getContext("2d");
 
     const data = {
-      labels: ["January", "February", "March", "April", "May", "June", "July"],
+      labels: reservasi?.labels,
       datasets: [
         {
           label: "Jumlah Reservasi",
-          data: [30, 50, 80, 40, 70, 90, 100], // Sesuaikan data sesuai dengan jumlah reservasi Anda
+          data: reservasi?.data,
           fill: false,
           borderColor: "rgba(75, 192, 192, 1)",
           tension: 0.1,

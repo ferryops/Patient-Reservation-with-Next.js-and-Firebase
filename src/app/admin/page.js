@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Dashboard from "../../components/Dashboard";
 import Reservasi from "../../components/Reservasi/Reservasi";
 import Pasien from "../../components/Pasien/Pasien";
@@ -8,12 +8,16 @@ import JadwalPraktek from "../../components/JadwalPraktek/JadwalPraktek";
 import { H5, P } from "@/components/Font";
 import { Button } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
+import LoginAdmin from "./components/LoginAdmin";
+import { AuthContext } from "@/context/AuthContext";
+import MainModal from "@/components/MainModal";
 
 export default function AdminPage() {
   const [clickMenu, setClickMenu] = useState("Dashboard");
   const [menuOpen, setMenuOpen] = useState(false);
   const menu = ["Dashboard", "Reservasi", "Pasien", "Dokter", "Jadwal Praktek"];
   const navigation = useRouter();
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const menu = localStorage.getItem("menu") || "Dashboard";
@@ -60,22 +64,47 @@ export default function AdminPage() {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-1 p-0 md:p-4">
+      <main className="flex-1 p-0">
         {/* Burger Menu Button */}
         <div className="md:hidden p-4">
           <button className="text-black flex gap-2" onClick={() => setMenuOpen(!menuOpen)}>
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
             </svg>
-            Menu
           </button>
         </div>
-        {clickMenu === "Dashboard" ? <Dashboard /> : null}
-        {clickMenu === "Reservasi" ? <Reservasi /> : null}
-        {clickMenu === "Pasien" ? <Pasien /> : null}
-        {clickMenu === "Dokter" ? <Dokter /> : null}
-        {clickMenu === "Jadwal Praktek" ? <JadwalPraktek /> : null}
       </main>
+      {user === null ? (
+        <LoginAdmin />
+      ) : (
+        <>
+          {user?.login !== "admin" ? (
+            <MainModal
+              size="md"
+              onOpen={true}
+              onClose={() => navigation.push("/")}
+              onTrue={() => navigation.push("/logout")}
+              title={"Unauthorized!"}
+              content={"Anda bukan admin. Silahkan logout lalu login sebagai admin."}
+              showFooter={true}
+              textTrue="Logout"
+              textFalse="Kembali"
+            />
+          ) : (
+            <>
+              {user === null ? null : (
+                <>
+                  {clickMenu === "Dashboard" ? <Dashboard /> : null}
+                  {clickMenu === "Reservasi" ? <Reservasi /> : null}
+                  {clickMenu === "Pasien" ? <Pasien /> : null}
+                  {clickMenu === "Dokter" ? <Dokter /> : null}
+                  {clickMenu === "Jadwal Praktek" ? <JadwalPraktek /> : null}
+                </>
+              )}
+            </>
+          )}
+        </>
+      )}
     </div>
   );
 }

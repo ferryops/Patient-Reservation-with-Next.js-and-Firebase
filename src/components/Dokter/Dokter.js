@@ -8,7 +8,7 @@ export default function Pasien() {
   const [onUpdate, setOnUpdate] = useState(false);
 
   useEffect(() => {
-    const loadPasiens = async () => {
+    const loadDokter = async () => {
       try {
         const data = await fetchDokter();
         setUsers(data);
@@ -16,12 +16,12 @@ export default function Pasien() {
         console.error("Error fetching pasiens:", error);
       }
     };
-    loadPasiens();
+    loadDokter();
   }, [onUpdate]);
 
   const columns = [
     { name: "NAMA", uid: "name" },
-    { name: "ROLE", uid: "role" },
+    { name: "SPESIALIS", uid: "spesialisasi" },
     { name: "STATUS", uid: "status" },
     { name: "AKSI", uid: "actions" },
   ];

@@ -12,16 +12,15 @@ import {
   Pagination,
   Button,
 } from "@nextui-org/react";
-import { FaPencilAlt, FaTrash, FaPlus } from "react-icons/fa";
+import { FaPencilAlt, FaTrash, FaPlus, FaFileExcel } from "react-icons/fa";
 import MainModal from "../MainModal";
 import Snackbar from "../Snackbar";
 import DokterForm from "../Dokter/DokterForm";
-import { deleteDokter } from "@/services/dokterService";
+import { deleteDokter, exportToExcelDokters } from "@/services/dokterService";
 
 const statusColorMap = {
-  active: "success",
-  paused: "danger",
-  vacation: "warning",
+  1: "success",
+  2: "danger",
 };
 
 export default function DokterCells({ columns, users, onUpdate }) {
@@ -35,6 +34,16 @@ export default function DokterCells({ columns, users, onUpdate }) {
     position: "bottom-center",
     variant: "success",
   });
+  // pagination
+  const [page, setPage] = React.useState(1);
+  const rowsPerPage = 5;
+  const pages = Math.ceil(users.length / rowsPerPage);
+  const items = React.useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    return users.slice(start, end);
+  }, [page, users]);
 
   const handleDeleteDokter = async (id) => {
     try {
@@ -42,7 +51,7 @@ export default function DokterCells({ columns, users, onUpdate }) {
         setOpenModal(false);
         setSnackbar({
           open: true,
-          message: res.message,
+          message: "Berhasil menghapus dokter",
           position: "top-center",
           variant: "success",
         });
@@ -58,27 +67,26 @@ export default function DokterCells({ columns, users, onUpdate }) {
     switch (columnKey) {
       case "name":
         return (
-          <User avatarProps={{ radius: "lg", src: user.avatar }} description={user.nama} name={user.nama}>
+          <User avatarProps={{ radius: "lg", src: user.avatar }} name={user.nama}>
             {user.nama}
           </User>
         );
-      case "role":
+      case "spesialis":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-sm capitalize">{cellValue}</p>
-            <p className="text-bold text-sm capitalize text-default-400">{user.nomor_kontak}</p>
+            <p className="text-bold text-sm capitalize">{user.spesialisasi}</p>
           </div>
         );
       case "status":
         return (
           <Chip className="capitalize" color={statusColorMap[user.status]} size="sm" variant="flat">
-            {cellValue}
+            {cellValue === 1 ? "Aktif" : "Non-Aktif"}
           </Chip>
         );
       case "actions":
         return (
           <div className="items-center gap-6 flex justify-center">
-            <Tooltip color="warning" content="Edit user">
+            <Tooltip color="warning" content="Edit Dokter">
               <span
                 className="text-lg text-default-400 cursor-pointer active:opacity-50"
                 onClick={() => {
@@ -89,7 +97,7 @@ export default function DokterCells({ columns, users, onUpdate }) {
                 <FaPencilAlt color="warning" />
               </span>
             </Tooltip>
-            <Tooltip color="danger" content="Delete user">
+            <Tooltip color="danger" content="Delete Dokter">
               <span
                 className="text-lg text-danger cursor-pointer active:opacity-50"
                 onClick={() => {
@@ -107,9 +115,39 @@ export default function DokterCells({ columns, users, onUpdate }) {
     }
   }, []);
 
+  const handleExportToExcelDokters = async () => {
+    try {
+      await exportToExcelDokters().then((res) => {
+        setSnackbar({
+          open: true,
+          message: "Exported successfully",
+          position: "top-center",
+          variant: "success",
+        });
+      });
+    } catch (error) {
+      console.error("Error exporting dokter:", error);
+    }
+  };
+
   return (
     <div className="w-full flex flex-col gap-4">
-      <Table aria-label="Custom cells">
+      <Table
+        aria-label="Custom cells"
+        bottomContent={
+          <div className="flex w-full justify-center">
+            <Pagination
+              isCompact
+              showControls
+              showShadow
+              color="secondary"
+              page={page}
+              total={pages}
+              onChange={(page) => setPage(page)}
+            />
+          </div>
+        }
+      >
         <TableHeader columns={columns}>
           {(column) => (
             <TableColumn key={column.uid} align={column.uid === "actions" ? "center" : "start"}>
@@ -117,17 +155,19 @@ export default function DokterCells({ columns, users, onUpdate }) {
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody items={users}>
+        <TableBody items={items}>
           {(item) => <TableRow key={item.id}>{(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}</TableRow>}
         </TableBody>
       </Table>
-      <div className="flex justify-between">
+      <div className="flex gap-3">
         <Button color="primary" startContent={<FaPlus />} onClick={() => setAddDokter(true)}>
           Tambah Dokter
         </Button>
-        <Pagination total={10} initialPage={1} />
+        <Button color="warning" startContent={<FaFileExcel />} onClick={() => handleExportToExcelDokters()}>
+          Ekspor Dokter ke Excel
+        </Button>
       </div>
-      {/* <pre>{JSON.stringify(selectDokter, null, 2)}</pre> */}
+      {/* <pre>{JSON.stringify(page, null, 2)}</pre> */}
       <MainModal
         size="md"
         onOpen={openModal}

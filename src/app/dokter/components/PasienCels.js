@@ -12,17 +12,19 @@ import {
   Pagination,
   Button,
 } from "@nextui-org/react";
-import { FaPencilAlt, FaTrash, FaPlus, FaFileExcel } from "react-icons/fa";
-import MainModal from "../MainModal";
-import Snackbar from "../Snackbar";
-import PasienForm from "../Pasien/PasienForm";
-import { deletePasien, exportToExcelPasiens } from "@/services/pasienService";
-
+import { FaPencilAlt, FaTrash, FaPlus } from "react-icons/fa";
+import statusReservasi from "@/constants/statusReservasi";
+import { deleteReservasi } from "@/services/reservasiService";
+import { formatTime } from "@/utils/formatTime";
+import PasienForm from "./PasienForm";
+import MainModal from "@/components/MainModal";
+import Snackbar from "@/components/Snackbar";
+import ReservasiForm from "@/components/Reservasi/ReservasiForm";
 export default function PasienCells({ columns, users, onUpdate }) {
   const [openModal, setOpenModal] = React.useState(false);
-  const [addPasien, setAddPasien] = React.useState(false);
+  const [addReservasi, setAddReservasi] = React.useState(false);
   const [updatePasien, setUpdatePasien] = React.useState(false);
-  const [selectPasien, setSelectPasien] = React.useState();
+  const [selectReservasi, setSelectReservasi] = React.useState();
   const [snackbar, setSnackbar] = React.useState({
     open: false,
     message: "",
@@ -41,9 +43,9 @@ export default function PasienCells({ columns, users, onUpdate }) {
     return users.slice(start, end);
   }, [page, users]);
 
-  const handleDeletePasien = async (id) => {
+  const handleDeleteReservasi = async (id) => {
     try {
-      await deletePasien(id).then((res) => {
+      await deleteReservasi(id).then((res) => {
         setOpenModal(false);
         setSnackbar({
           open: true,
@@ -54,55 +56,61 @@ export default function PasienCells({ columns, users, onUpdate }) {
         onUpdate(true);
       });
     } catch (error) {
-      console.error("Error deleting pasien:", error);
+      console.error("Error deleting reservasi:", error);
     }
   };
   const renderCell = React.useCallback((user, columnKey) => {
     const cellValue = user[columnKey];
 
     switch (columnKey) {
-      case "name":
+      case "pasien":
         return (
-          <User avatarProps={{ radius: "lg", src: user.avatar }} name={user.nama} className="capitalize">
-            {user.nama}
+          <User avatarProps={{ radius: "lg", src: user.avatar }} description={user?.pasien?.email} name={user?.pasien?.nama}>
+            {user?.pasien?.nama}
           </User>
         );
-      case "contact":
+      case "tanggal":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-sm">{user?.nomor_telepon}</p>
-            <p className="text-bold text-sm text-default-400">{user?.email}</p>
+            <p className="text-bold text-sm capitalize text-default-400">{formatTime(user?.waktu_reservasi)}</p>
           </div>
         );
-      case "last_diagnosis":
+      case "keluhan":
         return (
-          <Chip className="capitalize" size="sm" variant="flat">
-            {user?.diagnosis_terakhir}
+          <div className="flex flex-col">
+            <p className="text-bold text-sm capitalize text-default-400">{user?.keluhan}</p>
+          </div>
+        );
+      case "dokter":
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-sm capitalize text-default-400">{user?.dokter?.nama}</p>
+          </div>
+        );
+      case "status":
+        return (
+          <Chip
+            className="capitalize"
+            // @ts-ignore
+            color={statusReservasi?.find((status) => status?.value === user?.status)?.color || "default"}
+            size="sm"
+            variant="flat"
+          >
+            {cellValue}
           </Chip>
         );
       case "actions":
         return (
           <div className="items-center gap-6 flex justify-center">
-            <Tooltip color="warning" content="Edit Pasien">
+            <Tooltip color="warning" content="Ubah Reservasi">
               <span
                 className="text-lg text-default-400 cursor-pointer active:opacity-50"
                 onClick={() => {
-                  setSelectPasien(user.id);
+                  setSelectReservasi(user.id);
                   setUpdatePasien(true);
                 }}
               >
                 <FaPencilAlt color="warning" />
-              </span>
-            </Tooltip>
-            <Tooltip color="danger" content="Delete Pasien">
-              <span
-                className="text-lg text-danger cursor-pointer active:opacity-50"
-                onClick={() => {
-                  setSelectPasien(user.id);
-                  setOpenModal(true);
-                }}
-              >
-                <FaTrash color="danger" />
               </span>
             </Tooltip>
           </div>
@@ -111,21 +119,6 @@ export default function PasienCells({ columns, users, onUpdate }) {
         return cellValue;
     }
   }, []);
-
-  const handleExportToExcelPasiens = async () => {
-    try {
-      await exportToExcelPasiens().then((res) => {
-        setSnackbar({
-          open: true,
-          message: "Exported successfully",
-          position: "top-center",
-          variant: "success",
-        });
-      });
-    } catch (error) {
-      console.error("Error exporting pasien:", error);
-    }
-  };
 
   return (
     <div className="w-full flex flex-col gap-4">
@@ -156,41 +149,17 @@ export default function PasienCells({ columns, users, onUpdate }) {
           {(item) => <TableRow key={item.id}>{(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}</TableRow>}
         </TableBody>
       </Table>
-      <div className="flex gap-3">
-        <Button color="primary" startContent={<FaPlus />} onClick={() => setAddPasien(true)}>
-          Tambah Pasien
-        </Button>
-        <Button color="warning" startContent={<FaFileExcel />} onClick={() => handleExportToExcelPasiens()}>
-          Ekspor Pasien ke Excel
-        </Button>
-      </div>
-      <MainModal
-        size="md"
-        onOpen={openModal}
-        onClose={() => setOpenModal(false)}
-        onTrue={() => handleDeletePasien(selectPasien)}
-        title={"Konfirmasi Hapus Pasien"}
-        content={"Yakin ingin menghapus pasien ini?"}
-        showFooter={true}
-        textTrue="Hapus"
-        textFalse="Batal"
-      />
-      <MainModal
-        size="md"
-        onOpen={addPasien}
-        onClose={() => setAddPasien(false)}
-        onTrue={() => console.log("add")}
-        title={"Tambah Pasien"}
-        content={<PasienForm id={null} onClose={() => setAddPasien(false)} onSuccess={(data) => onUpdate(data)} />}
-        showFooter={false}
-      />
+
+      {/* <pre>{JSON.stringify(selectReservasi, null, 2)}</pre> */}
       <MainModal
         size="md"
         onOpen={updatePasien}
         onClose={() => setUpdatePasien(false)}
         onTrue={() => console.log("update")}
-        title={"Edit Pasien"}
-        content={<PasienForm id={selectPasien} onClose={() => setUpdatePasien(false)} onSuccess={(data) => onUpdate(data)} />}
+        title={"Ubah Reservasi"}
+        content={
+          <ReservasiForm id={selectReservasi} onClose={() => setUpdatePasien(false)} onSuccess={(data) => onUpdate(data)} />
+        }
         showFooter={false}
       />
       <Snackbar message={snackbar.message} show={snackbar.open} position={snackbar.position} variant={snackbar.variant} />
