@@ -1,3 +1,4 @@
+// src/pages/api/dokter/login.js
 import firebaseApp from "../../../firebase/config";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, collection, doc, getDoc } from "firebase/firestore";
@@ -15,13 +16,15 @@ export default async function handler(req, res) {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      const usersRef = collection(firestore, "pasien");
-      const querySnapshot = await getDoc(doc(usersRef, user.uid));
-      if (querySnapshot.exists()) {
-        const userData = querySnapshot.data();
-        res.status(200).json({ uid: user.uid, email: user.email, id: querySnapshot.id, login: "pasien", ...userData });
+      // Get document from 'dokter' collection based on user's UID
+      const dokterRef = doc(firestore, "dokter", user.uid);
+      const docSnap = await getDoc(dokterRef);
+
+      if (docSnap.exists()) {
+        const dokterData = docSnap.data();
+        res.status(200).json({ uid: user.uid, email: user.email, login: "dokter", ...dokterData });
       } else {
-        res.status(404).json({ message: "User document not found" });
+        res.status(404).json({ message: "Dokter document not found" });
       }
     } catch (error) {
       console.error("Error logging in:", error);

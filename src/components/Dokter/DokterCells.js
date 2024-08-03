@@ -51,7 +51,7 @@ export default function DokterCells({ columns, users, onUpdate }) {
         setOpenModal(false);
         setSnackbar({
           open: true,
-          message: res.message,
+          message: "Berhasil menghapus dokter",
           position: "top-center",
           variant: "success",
         });

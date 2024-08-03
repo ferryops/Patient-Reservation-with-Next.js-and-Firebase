@@ -4,14 +4,14 @@ import { fetchReservasi } from "@/services/reservasiService";
 import { H4 } from "../Font";
 import PasienReservasiCells from "./PasienReservasiCells";
 
-export default function PasienReservasi() {
+export default function PasienReservasi({ user }) {
   const [reservations, serReservations] = useState([]);
   const [onUpdate, setOnUpdate] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchReservasi({ pasien: "" });
+        const data = await fetchReservasi({ pasien: user?.id });
         serReservations(data);
       } catch (error) {
         console.error("Error fetching reservasi:", error);

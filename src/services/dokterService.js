@@ -62,3 +62,27 @@ export const exportToExcelDokters = async () => {
   link.parentNode.removeChild(link);
   return;
 };
+
+export const loginDokterWithEmailAndPassword = async ({ email, password }) => {
+  const response = await fetch(`${API_URL}/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  });
+  if (!response.ok) throw new Error("Failed to login dokter");
+  return response.json();
+};
+
+export const resetPasswordDokter = async ({ email }) => {
+  const response = await fetch(`${API_URL}/reset-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+  });
+  if (!response.ok) throw new Error("Failed to reset password dokter");
+  return response.json();
+};

@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { createPasien, fetchPasienById, updatePasien } from "../../services/pasienService";
 import { Button, Input } from "@nextui-org/react";
+import { FaEye } from "react-icons/fa";
+import { FaEyeSlash } from "react-icons/fa";
 
 export default function PasienForm({ onClose, onSuccess, id }) {
   const [loadingButton, setLoadingButton] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({
     nama: "",
     tanggal_lahir: "",
     alamat: "",
     nomor_kontak: "",
+    email: "",
+    password: "",
+    created_at: new Date(),
+    updated_at: id ? new Date() : null,
     riwayat_medis: {
       diagnosis_terakhir: "",
       riwayat_alergi: [],
@@ -81,7 +88,23 @@ export default function PasienForm({ onClose, onSuccess, id }) {
         />
 
         <Input name="alamat" label="Alamat" type="text" value={form?.alamat} onChange={handleChange} />
-
+        <Input name="email" label="Email" type="text" value={form?.email} onChange={handleChange} />
+        <Input
+          label="Password"
+          type={showPassword ? "text" : "password"}
+          variant="bordered"
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
+          value={form?.password}
+          endContent={
+            <button className="focus:outline-none" type="button" onClick={() => setShowPassword(!showPassword)}>
+              {showPassword ? (
+                <FaEyeSlash className="text-2xl text-default-400 pointer-events-none" />
+              ) : (
+                <FaEye className="text-2xl text-default-400 pointer-events-none" />
+              )}
+            </button>
+          }
+        />
         <Input
           name="nomor_telepon"
           label="Nomor Telepon"

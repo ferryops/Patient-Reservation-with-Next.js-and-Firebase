@@ -1,24 +1,55 @@
 // src/pages/api/dokter/index.js
 import firebaseApp from "../../../firebase/config";
-import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, doc, setDoc, getDocs, query, where } from "firebase/firestore";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import transporter from "../../../utils/nodemailer";
 import XLSX from "xlsx";
 
 export default async function handler(req, res) {
-  const { method, body, query: queryParams } = req;
+  const { method, query: queryParams, body } = req;
+
+  const firestore = getFirestore(firebaseApp);
+  const auth = getAuth(firebaseApp);
+  const dokterRef = collection(firestore, "dokter");
 
   if (method === "POST") {
     try {
-      const firestore = getFirestore(firebaseApp);
-      const dokterRef = collection(firestore, "dokter");
+      const { email, password, ...otherData } = body;
 
-      // Tambahkan dokumen baru ke koleksi "dokter"
-      const docRef = await addDoc(dokterRef, body);
-      const newDokter = { id: docRef.id, ...body };
+      // Create a new user in Firebase Authentication
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
 
-      res.status(201).json(newDokter);
+        // Create a new user document in "dokter" collection with the UID as the document ID
+        const newBody = { ...otherData, uid: user.uid, email: user.email };
+        const docRef = doc(dokterRef, user.uid); // Create a reference with the UID as the document ID
+
+        await setDoc(docRef, newBody); // Set the document with the newBody data
+
+        const newDokter = { id: user.uid, ...newBody };
+
+        // send email notifikasi
+        const mailOptions = {
+          from: process.env.EMAIL_USER,
+          to: email, // Email dokter
+          subject: "Akun Dokter Berhasil Dibuat",
+          text: `Akun Anda telah berhasil dibuat.\n\nNama: ${body.nama}\nEmail: ${email}\n\nAnda dapat login ke sistem dengan email dan password yang telah didaftarkan.\n\nTerima kasih.`,
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res.status(201).json(newDokter);
+      } catch (authError) {
+        if (authError.code === "auth/email-already-in-use") {
+          res.status(400).json({ message: "Email already in use" });
+        } else {
+          throw authError;
+        }
+      }
     } catch (error) {
       console.error("Error adding dokter:", error);
-      res.status(500).json({ message: "Failed to add dokter" });
+      res.status(500).json({ message: "Failed to add dokter", error: error.message });
     }
   } else if (method === "GET") {
     try {

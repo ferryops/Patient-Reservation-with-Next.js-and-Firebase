@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { createDokter, fetchDokterById, updateDokter } from "../../services/dokterService";
 import { Button, Checkbox, Input } from "@nextui-org/react";
+import { FaEye } from "react-icons/fa";
+import { FaEyeSlash } from "react-icons/fa";
 
 const daysOfWeek = ["senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu"];
 
@@ -18,8 +20,13 @@ export default function DokterForm({ onClose, onSuccess, id }) {
       minggu: { jam_mulai: "", jam_selesai: "" },
     },
     status: 1,
+    email: "",
+    password: "",
+    created_at: new Date(),
+    updated_at: id ? new Date() : null,
   });
   const [loadingButton, setLoadingButton] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -71,6 +78,29 @@ export default function DokterForm({ onClose, onSuccess, id }) {
           type="text"
           value={form.spesialisasi}
           onChange={(e) => setForm({ ...form, spesialisasi: e.target.value })}
+        />
+        <Input
+          name="email"
+          label="Email"
+          type="email"
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+        />
+        <Input
+          label="Password"
+          type={showPassword ? "text" : "password"}
+          variant="bordered"
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
+          value={form.password}
+          endContent={
+            <button className="focus:outline-none" type="button" onClick={() => setShowPassword(!showPassword)}>
+              {showPassword ? (
+                <FaEyeSlash className="text-2xl text-default-400 pointer-events-none" />
+              ) : (
+                <FaEye className="text-2xl text-default-400 pointer-events-none" />
+              )}
+            </button>
+          }
         />
 
         {daysOfWeek.map((day) => (

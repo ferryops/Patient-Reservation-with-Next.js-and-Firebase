@@ -7,6 +7,8 @@ import { AuthContext } from "@/context/AuthContext";
 import { Button } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import PasienReservasi from "./components/Pasien";
+import LoginDokter from "./components/LoginDokter";
+import MainModal from "@/components/MainModal";
 
 export default function DokterPage() {
   const [clickMenu, setClickMenu] = useState("Pasien");
@@ -76,9 +78,28 @@ export default function DokterPage() {
             Menu
           </button>
         </div>
-        {clickMenu === "Pasien" ? <PasienReservasi /> : null}
       </main>
-      {/* {user === null ? <LoginPasien /> : null} */}
+      {user === null ? (
+        <LoginDokter />
+      ) : (
+        <>
+          {user?.login !== "dokter" ? (
+            <MainModal
+              size="md"
+              onOpen={true}
+              onClose={() => navigation.push("/")}
+              onTrue={() => navigation.push("/logout")}
+              title={"Unauthorized!"}
+              content={"Anda bukan dokter. Silahkan logout lalu login sebagai dokter."}
+              showFooter={true}
+              textTrue="Logout"
+              textFalse="Kembali"
+            />
+          ) : (
+            <>{user === null ? null : <> {clickMenu === "Pasien" ? <PasienReservasi dokter={user} /> : null}</>}</>
+          )}
+        </>
+      )}
     </div>
   );
 }

@@ -143,7 +143,7 @@ export default function PasienReservasiForm({ onClose, onSuccess, id }) {
           />
         )}
 
-        <pre>{JSON.stringify(form, null, 2)}</pre>
+        {/* <pre>{JSON.stringify(form, null, 2)}</pre> */}
         <div className="flex justify-end gap-2">
           <Button color="danger" variant="light" type="submit" isLoading={loadingButton}>
             {id ? "Update" : "Buat"} Reservasi
