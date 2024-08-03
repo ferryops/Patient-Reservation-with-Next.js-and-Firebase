@@ -1,28 +1,14 @@
 import React, { useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
 
-export default function DokterPieChart() {
+export default function DokterPieChart({ dokters }) {
   const chartRef = useRef(null);
 
   useEffect(() => {
     const ctx = chartRef.current.getContext("2d");
 
-    // Data dokter
-    const dokterData = [
-      {
-        id: "4TgPCeTLs5MSDzOfxSQI",
-        nama: "Dr. Agus",
-        spesialisasi: "Jantung",
-      },
-      {
-        id: "5z5hTfRUTzXXCCe1fk8D",
-        nama: "Dr. Windy",
-        spesialisasi: "Gigi",
-      },
-    ];
-
     // Menghitung jumlah dokter per spesialisasi
-    const spesialisasiCount = dokterData.reduce((acc, dokter) => {
+    const spesialisasiCount = dokters.reduce((acc, dokter) => {
       acc[dokter.spesialisasi] = (acc[dokter.spesialisasi] || 0) + 1;
       return acc;
     }, {});
@@ -65,7 +51,7 @@ export default function DokterPieChart() {
   }, []);
 
   return (
-    <div className="w-full h-[30rem] flex justify-center">
+    <div className="w-full max-h-[30rem] flex justify-center">
       <canvas id="dokterChart" ref={chartRef} />
     </div>
   );

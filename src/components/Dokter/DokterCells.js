@@ -12,11 +12,11 @@ import {
   Pagination,
   Button,
 } from "@nextui-org/react";
-import { FaPencilAlt, FaTrash, FaPlus } from "react-icons/fa";
+import { FaPencilAlt, FaTrash, FaPlus, FaFileExcel } from "react-icons/fa";
 import MainModal from "../MainModal";
 import Snackbar from "../Snackbar";
 import DokterForm from "../Dokter/DokterForm";
-import { deleteDokter } from "@/services/dokterService";
+import { deleteDokter, exportToExcelDokters } from "@/services/dokterService";
 
 const statusColorMap = {
   1: "success",
@@ -115,6 +115,21 @@ export default function DokterCells({ columns, users, onUpdate }) {
     }
   }, []);
 
+  const handleExportToExcelDokters = async () => {
+    try {
+      await exportToExcelDokters().then((res) => {
+        setSnackbar({
+          open: true,
+          message: "Exported successfully",
+          position: "top-center",
+          variant: "success",
+        });
+      });
+    } catch (error) {
+      console.error("Error exporting dokter:", error);
+    }
+  };
+
   return (
     <div className="w-full flex flex-col gap-4">
       <Table
@@ -144,9 +159,12 @@ export default function DokterCells({ columns, users, onUpdate }) {
           {(item) => <TableRow key={item.id}>{(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}</TableRow>}
         </TableBody>
       </Table>
-      <div className="flex justify-between">
+      <div className="flex gap-3">
         <Button color="primary" startContent={<FaPlus />} onClick={() => setAddDokter(true)}>
           Tambah Dokter
+        </Button>
+        <Button color="warning" startContent={<FaFileExcel />} onClick={() => handleExportToExcelDokters()}>
+          Ekspor Dokter ke Excel
         </Button>
       </div>
       {/* <pre>{JSON.stringify(page, null, 2)}</pre> */}

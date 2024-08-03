@@ -12,7 +12,7 @@ import {
   Pagination,
   Button,
 } from "@nextui-org/react";
-import { FaPencilAlt, FaTrash, FaPlus } from "react-icons/fa";
+import { FaPencilAlt, FaTrash, FaPlus, FaFileExcel } from "react-icons/fa";
 import MainModal from "../MainModal";
 import Snackbar from "../Snackbar";
 import PasienForm from "../Pasien/PasienForm";
@@ -156,15 +156,13 @@ export default function PasienCells({ columns, users, onUpdate }) {
           {(item) => <TableRow key={item.id}>{(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}</TableRow>}
         </TableBody>
       </Table>
-      <div className="flex justify-between">
-        <div>
-          <Button color="primary" startContent={<FaPlus />} onClick={() => setAddPasien(true)}>
-            Tambah Pasien
-          </Button>
-          <Button color="warning" startContent={<FaPlus />} onClick={() => handleExportToExcelPasiens()}>
-            Ekspor data ke Excel
-          </Button>
-        </div>
+      <div className="flex gap-3">
+        <Button color="primary" startContent={<FaPlus />} onClick={() => setAddPasien(true)}>
+          Tambah Pasien
+        </Button>
+        <Button color="warning" startContent={<FaFileExcel />} onClick={() => handleExportToExcelPasiens()}>
+          Ekspor Pasien ke Excel
+        </Button>
       </div>
       <MainModal
         size="md"

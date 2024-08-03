@@ -43,3 +43,22 @@ export const deleteDokter = async (id) => {
   if (!response.ok) throw new Error("Failed to delete dokter");
   return response.json();
 };
+
+export const exportToExcelDokters = async () => {
+  const response = await fetch(`${API_URL}?exportToExcel=true`);
+  if (!response.ok) throw new Error("Failed to export doctors to Excel");
+  // Convert response to blob
+  const blob = await response.blob();
+  // Create blob link to download
+  const url = window.URL.createObjectURL(new Blob([blob]));
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", "dokter.xlsx");
+  // Append to html link element page
+  document.body.appendChild(link);
+  // Start download
+  link.click();
+  // Clean up and remove the link
+  link.parentNode.removeChild(link);
+  return;
+};

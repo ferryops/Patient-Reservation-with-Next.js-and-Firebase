@@ -12,12 +12,12 @@ import {
   Pagination,
   Button,
 } from "@nextui-org/react";
-import { FaPencilAlt, FaTrash, FaPlus } from "react-icons/fa";
+import { FaPencilAlt, FaTrash, FaPlus, FaFileExcel } from "react-icons/fa";
 import MainModal from "../MainModal";
 import Snackbar from "../Snackbar";
 import ReservasiForm from "../Reservasi/ReservasiForm";
 import statusReservasi from "@/constants/statusReservasi";
-import { deleteReservasi } from "@/services/reservasiService";
+import { deleteReservasi, exportToExcelReservasi } from "@/services/reservasiService";
 import { formatTime } from "@/utils/formatTime";
 export default function ReservasiCells({ columns, users, onUpdate }) {
   const [openModal, setOpenModal] = React.useState(false);
@@ -44,11 +44,11 @@ export default function ReservasiCells({ columns, users, onUpdate }) {
 
   const handleDeleteReservasi = async (id) => {
     try {
-      await deleteReservasi(id).then((res) => {
+      await deleteReservasi(id).then(() => {
         setOpenModal(false);
         setSnackbar({
           open: true,
-          message: res.message,
+          message: "Berhasil menghapus reservasi",
           position: "top-center",
           variant: "success",
         });
@@ -134,6 +134,21 @@ export default function ReservasiCells({ columns, users, onUpdate }) {
     }
   }, []);
 
+  const handleExportToExcelReservasi = async () => {
+    try {
+      await exportToExcelReservasi().then((res) => {
+        setSnackbar({
+          open: true,
+          message: "Exported successfully",
+          position: "top-center",
+          variant: "success",
+        });
+      });
+    } catch (error) {
+      console.error("Error exporting pasien:", error);
+    }
+  };
+
   return (
     <div className="w-full flex flex-col gap-4">
       <Table
@@ -163,11 +178,13 @@ export default function ReservasiCells({ columns, users, onUpdate }) {
           {(item) => <TableRow key={item.id}>{(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}</TableRow>}
         </TableBody>
       </Table>
-      <div className="flex justify-between">
+      <div className="flex gap-3">
         <Button color="primary" startContent={<FaPlus />} onClick={() => setAddReservasi(true)}>
           Tambah Reservasi
         </Button>
-        <Pagination total={10} initialPage={1} />
+        <Button color="warning" startContent={<FaFileExcel />} onClick={() => handleExportToExcelReservasi()}>
+          Ekspor Reservasi ke Excel
+        </Button>
       </div>
       {/* <pre>{JSON.stringify(selectReservasi, null, 2)}</pre> */}
       <MainModal

@@ -2,9 +2,10 @@
 import firebaseApp from "../../../firebase/config";
 import { getFirestore, collection, getDocs, doc, getDoc, addDoc, where, query } from "firebase/firestore";
 import transporter from "../../../utils/nodemailer";
+import XLSX from "xlsx";
 
 export default async function handler(req, res) {
-  const { method, body } = req;
+  const { method, body, query: queryParams } = req;
   const firestore = getFirestore(firebaseApp);
   const reservasiRef = collection(firestore, "reservasi");
 
@@ -88,7 +89,35 @@ export default async function handler(req, res) {
         })
       );
 
-      res.status(200).json(reservasiList);
+      const { exportToExcel } = queryParams;
+
+      if (exportToExcel === "true") {
+        // Process data to include relevant details
+        const reservasiData = reservasiList.map((reservasi) => {
+          return {
+            id: reservasi.id,
+            nama_pasien: reservasi?.pasien?.nama || "",
+            keluhan: reservasi?.keluhan || "",
+            nama_dokter: reservasi?.dokter?.nama || "",
+            spesialisasi: reservasi?.dokter?.spesialisasi || "",
+            waktu_reservasi: reservasi?.waktu_reservasi,
+            status: reservasi?.status,
+          };
+        });
+
+        // Convert data to Excel format
+        const ws = XLSX.utils.json_to_sheet(reservasiData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Reservasi");
+        const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "buffer" });
+
+        // Set headers for file download
+        res.setHeader("Content-Disposition", "attachment; filename=reservasi.xlsx");
+        res.setHeader("Content-Type", "application/octet-stream");
+        res.status(200).send(excelBuffer);
+      } else {
+        res.status(200).json(reservasiList);
+      }
     } catch (error) {
       console.error("Error fetching reservasi list:", error);
       res.status(500).json({ message: "Failed to fetch reservasi list" });
