@@ -30,7 +30,7 @@ export default async function handler(req, res) {
 
         const newPasien = { id: user.uid, ...newBody }; //
 
-        // send email notifikasi
+        // kirim email notifikasi
         const mailOptions = {
           from: process.env.EMAIL_USER,
           to: email, // Email pasien
