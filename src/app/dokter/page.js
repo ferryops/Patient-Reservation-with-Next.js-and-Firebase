@@ -68,7 +68,7 @@ export default function DokterPage() {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-1 p-0 md:p-4">
+      <main className="flex-1 p-0">
         {/* Burger Menu Button */}
         <div className="md:hidden p-4">
           <button className="text-black flex gap-2" onClick={() => setMenuOpen(!menuOpen)}>
