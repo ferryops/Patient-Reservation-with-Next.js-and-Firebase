@@ -34,6 +34,16 @@ export default function DokterCells({ columns, users, onUpdate }) {
     position: "bottom-center",
     variant: "success",
   });
+  // pagination
+  const [page, setPage] = React.useState(1);
+  const rowsPerPage = 5;
+  const pages = Math.ceil(users.length / rowsPerPage);
+  const items = React.useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    return users.slice(start, end);
+  }, [page, users]);
 
   const handleDeleteDokter = async (id) => {
     try {
@@ -107,7 +117,22 @@ export default function DokterCells({ columns, users, onUpdate }) {
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <Table aria-label="Custom cells">
+      <Table
+        aria-label="Custom cells"
+        bottomContent={
+          <div className="flex w-full justify-center">
+            <Pagination
+              isCompact
+              showControls
+              showShadow
+              color="secondary"
+              page={page}
+              total={pages}
+              onChange={(page) => setPage(page)}
+            />
+          </div>
+        }
+      >
         <TableHeader columns={columns}>
           {(column) => (
             <TableColumn key={column.uid} align={column.uid === "actions" ? "center" : "start"}>
@@ -115,7 +140,7 @@ export default function DokterCells({ columns, users, onUpdate }) {
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody items={users}>
+        <TableBody items={items}>
           {(item) => <TableRow key={item.id}>{(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}</TableRow>}
         </TableBody>
       </Table>
@@ -123,9 +148,8 @@ export default function DokterCells({ columns, users, onUpdate }) {
         <Button color="primary" startContent={<FaPlus />} onClick={() => setAddDokter(true)}>
           Tambah Dokter
         </Button>
-        <Pagination total={10} initialPage={1} />
       </div>
-      {/* <pre>{JSON.stringify(selectDokter, null, 2)}</pre> */}
+      {/* <pre>{JSON.stringify(page, null, 2)}</pre> */}
       <MainModal
         size="md"
         onOpen={openModal}
